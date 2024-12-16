@@ -1,0 +1,11 @@
+{
+  "name": "s.m.a.r.t_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "VishalRMahajan",
+  "license": "ISC",
+  "description": ""
+}
