@@ -1,11 +1,11 @@
 {
   "name": "s.m.a.r.t_backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
     "dist": "npx tsc",
-    "dev": "nodemon src/index.ts",
-    "start": "node dist/index.js",
+    "dev": "nodemon src/server.ts",
+    "start": "node dist/server.js",
     "prepare": "husky"
   },
   "author": "VishalRMahajan",
