@@ -39,11 +39,15 @@
         "typescript-eslint": "^8.18.1"
     },
     "dependencies": {
+        "@types/cors": "^2.8.17",
         "colorette": "^2.0.20",
+        "cors": "^2.8.5",
         "cross-env": "^7.0.3",
         "dotenv-flow": "^4.1.0",
         "express": "^4.21.2",
+        "helmet": "^8.0.0",
         "mongoose": "^8.9.1",
+        "rate-limiter-flexible": "^5.0.4",
         "source-map-support": "^0.5.21",
         "winston": "^3.17.0",
         "winston-mongodb": "^6.0.0"
