@@ -12,8 +12,5 @@ export default tseslint.config({
         }
     },
     files: ['**/*.ts'],
-    extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked, eslintConfigPrettier],
-    rules: {
-        'no-console': 'error'
-    }
+    extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked, eslintConfigPrettier]
 })
