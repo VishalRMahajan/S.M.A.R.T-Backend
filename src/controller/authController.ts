@@ -7,7 +7,7 @@ import { User } from '../model/userModel'
 import httpError from '../util/httpError'
 import httpResponse from '../util/httpResponse'
 import { GenerateTokenandSetCookie } from '../util/GenerateTokenandSetCookie'
-import { body, validationResult } from 'express-validator'
+
 import { SendVerificationEmail } from '../service/Email/SendVerificationEmail'
 import { SendFogotPasswordEmail } from '../service/Email/SendForgotPasswordEmail'
 import config from '../config/config'
@@ -18,67 +18,51 @@ interface CustomRequest extends Request {
 }
 
 export default {
-    signup: [
-        body('name').notEmpty().withMessage('Name is required'),
-        body('email').isEmail().withMessage('Valid email is required'),
-        body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
-
-        async (req: Request, res: Response, next: NextFunction) => {
-            const errors = validationResult(req)
-
-            if (!errors.isEmpty()) {
-                const errorMessages = errors
-                    .array()
-                    .map((error: { msg: string }) => error.msg)
-                    .join(', ')
-                return httpError(next, new Error(errorMessages), req, 400)
-            }
-
-            const { name, email, password }: { name: string; email: string; password: string } = req.body as {
-                name: string
-                email: string
-                password: string
-            }
-
-            try {
-                const userAlreadyExists = await User.findOne({ email })
-
-                if (userAlreadyExists) {
-                    return httpError(next, new Error('User already exists'), req, 409)
-                }
-
-                const hashedPassword = await bcrypt.hash(password, 10)
-
-                const verificationToken = Math.floor(100000 + Math.random() * 900000).toString()
-
-                const user = new User({
-                    name,
-                    email,
-                    password: hashedPassword,
-                    verificationToken,
-                    verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
-                })
-
-                await user.save()
-
-                GenerateTokenandSetCookie(res, user._id.toString())
-                await SendVerificationEmail(user.name, user.email, user.verificationToken as string)
-
-                const data = {
-                    user: {
-                        name: user.name,
-                        email: user.email,
-                        role: user.role,
-                        isVerified: user.isVerified
-                    }
-                }
-
-                httpResponse(req, res, 201, 'User created successfully', data)
-            } catch (error) {
-                httpError(next, error, req, 500)
-            }
+    signup: async (req: Request, res: Response, next: NextFunction) => {
+        const { name, email, password }: { name: string; email: string; password: string } = req.body as {
+            name: string
+            email: string
+            password: string
         }
-    ],
+
+        try {
+            const userAlreadyExists = await User.findOne({ email: { $eq: email } }).maxTimeMS(5000)
+
+            if (userAlreadyExists) {
+                return httpError(next, new Error('User already exists'), req, 409)
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10)
+
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString()
+
+            const user = new User({
+                name,
+                email,
+                password: hashedPassword,
+                verificationToken,
+                verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
+            })
+
+            await user.save()
+
+            GenerateTokenandSetCookie(res, user._id.toString())
+            await SendVerificationEmail(user.name, user.email, user.verificationToken as string)
+
+            const data = {
+                user: {
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    isVerified: user.isVerified
+                }
+            }
+
+            httpResponse(req, res, 201, 'User created successfully', data)
+        } catch (error) {
+            httpError(next, error, req, 500)
+        }
+    },
     verifyemail: async (req: Request, res: Response, next: NextFunction) => {
         const { email, verificationToken }: { email: string; verificationToken: string } = req.body as { email: string; verificationToken: string }
 
@@ -87,7 +71,7 @@ export default {
         }
 
         try {
-            const user = await User.findOne({ email })
+            const user = await User.findOne({ email: { $eq: email } }).maxTimeMS(5000)
             if (!user) {
                 return httpError(next, new Error('User not found'), req, 404)
             }
@@ -131,7 +115,7 @@ export default {
         }
 
         try {
-            const user = await User.findOne({ email })
+            const user = await User.findOne({ email: { $eq: email } }).maxTimeMS(5000)
             if (!user) {
                 return httpError(next, new Error('User not found'), req, 404)
             }
@@ -176,7 +160,7 @@ export default {
         const { email }: { email: string } = req.body as { email: string }
 
         try {
-            const user = await User.findOne({ email })
+            const user = await User.findOne({ email: { $eq: email } }).maxTimeMS(5000)
             if (!user) {
                 return httpError(next, new Error('User not found'), req, 404)
             }
