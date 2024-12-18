@@ -7,7 +7,6 @@ import httpError from './util/httpError'
 import helmet from 'helmet'
 import cors from 'cors'
 import authRouter from './router/authRouter'
-import cookieParser from 'cookie-parser'
 
 const app: Application = express()
 
@@ -21,7 +20,6 @@ app.use(
     })
 )
 app.use(express.json())
-app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '../', 'public')))
 
 // Routes

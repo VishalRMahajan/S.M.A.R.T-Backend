@@ -42,11 +42,9 @@
     },
     "dependencies": {
         "@types/bcryptjs": "^2.4.6",
-        "@types/cookie-parser": "^1.4.8",
         "@types/cors": "^2.8.17",
         "bcryptjs": "^2.4.3",
         "colorette": "^2.0.20",
-        "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "cross-env": "^7.0.3",
         "dotenv-flow": "^4.1.0",
